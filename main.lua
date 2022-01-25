@@ -65,6 +65,13 @@ function love.draw()
       SPRITES.zombie:getWidth() / 2,
       SPRITES.zombie:getHeight() / 2
     )
+
+    -- Remove all zombies
+    if DISTANCEBETWEEN(z.x, z.y, PLAYER.x, PLAYER.y) < 100 then
+      for index in ipairs(ZOMBIES) do
+        ZOMBIES[index] = nil
+      end
+    end
   end
 end
 
@@ -72,6 +79,10 @@ end
 
 function GETMOUSEANGLE(x1, y1, x2, y2)
   return math.atan2( ( y1 - y2 ), ( x1 - x2 ) ) + math.pi
+end
+
+function DISTANCEBETWEEN(x1, y1, x2, y2)
+  return math.sqrt( ( x2 - x1 )^2 + ( y2 - y1 )^2 )
 end
 
 function SPAWNZOMBIE()
