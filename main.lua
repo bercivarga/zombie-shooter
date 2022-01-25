@@ -1,6 +1,5 @@
 function love.load()
   SPRITES = {}
-
   SPRITES.background = love.graphics.newImage('sprites/background.png')
   SPRITES.bullet = love.graphics.newImage('sprites/bullet.png')
   SPRITES.player = love.graphics.newImage('sprites/player.png')
@@ -50,6 +49,29 @@ function love.update(dt)
   for i=#BULLETS, 1, -1 do
     local b = BULLETS[i]
     if b.x < 0 or b.y < 0 or b.x > love.graphics.getWidth() or b.y > love.graphics.getHeight() then
+      table.remove(BULLETS, i)
+    end
+  end
+
+  for i,z in ipairs(ZOMBIES) do
+    for j,b in ipairs(BULLETS) do
+      if DISTANCEBETWEEN(z.x, z.y, b.x, b.y) < 20 then
+        z.dead = true
+        b.dead = true
+      end
+    end
+  end
+
+  for i=#ZOMBIES, 1, -1 do
+    local z = ZOMBIES[i]
+    if z.dead then
+      table.remove(ZOMBIES, i)
+    end
+  end
+
+  for i=#BULLETS, 1, -1 do
+    local b = BULLETS[i]
+    if b.dead then
       table.remove(BULLETS, i)
     end
   end
@@ -118,6 +140,7 @@ function SPAWNZOMBIE()
   zombie.x = math.random(0, love.graphics.getWidth())
   zombie.y = math.random(0, love.graphics.getHeight())
   zombie.speed = 180
+  zombie.dead = false
 
   table.insert(ZOMBIES, zombie)
 end
@@ -128,6 +151,7 @@ function SPAWNBULLET()
   bullet.y = PLAYER.y
   bullet.speed = 500
   bullet.direction = GETMOUSEANGLE(PLAYER.x, PLAYER.y, love.mouse.getX(), love.mouse.getY())
+  bullet.dead = false
 
   table.insert(BULLETS, bullet)
 end
