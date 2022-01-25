@@ -12,6 +12,7 @@ function love.load()
   PLAYER.speed = 180
 
   ZOMBIES = {}
+  BULLETS = {}
 end
 
 function love.update(dt)
@@ -38,6 +39,20 @@ function love.update(dt)
     z.x = z.x + (math.cos( GETMOUSEANGLE( z.x, z.y, PLAYER.x, PLAYER.y ) ) * z.speed * dt)
     z.y = z.y + (math.sin( GETMOUSEANGLE( z.x, z.y, PLAYER.x, PLAYER.y ) ) * z.speed * dt)
   end
+
+  -- Bullet movement
+  for i,b in ipairs(BULLETS) do
+    b.x = b.x + (math.cos( b.direction ) * b.speed * dt)
+    b.y = b.y + (math.sin( b.direction ) * b.speed * dt)
+  end
+
+  -- # returns array length
+  for i=#BULLETS, 1, -1 do
+    local b = BULLETS[i]
+    if b.x < 0 or b.y < 0 or b.x > love.graphics.getWidth() or b.y > love.graphics.getHeight() then
+      table.remove(BULLETS, i)
+    end
+  end
 end
 
 function love.draw()
@@ -54,7 +69,7 @@ function love.draw()
     SPRITES.player:getHeight() / 2
   )
 
-  for i,z in ipairs(ZOMBIES) do
+  for _,z in ipairs(ZOMBIES) do
     love.graphics.draw(
       SPRITES.zombie,
       z.x,
@@ -72,6 +87,19 @@ function love.draw()
         ZOMBIES[index] = nil
       end
     end
+  end
+
+  for _,b in ipairs(BULLETS) do
+    love.graphics.draw(
+      SPRITES.bullet,
+      b.x,
+      b.y,
+      nil,
+      .5,
+      nil,
+      SPRITES.bullet:getWidth() / 2,
+      SPRITES.bullet:getHeight() / 2
+    )
   end
 end
 
@@ -94,8 +122,24 @@ function SPAWNZOMBIE()
   table.insert(ZOMBIES, zombie)
 end
 
+function SPAWNBULLET()
+  local bullet = {}
+  bullet.x = PLAYER.x
+  bullet.y = PLAYER.y
+  bullet.speed = 500
+  bullet.direction = GETMOUSEANGLE(PLAYER.x, PLAYER.y, love.mouse.getX(), love.mouse.getY())
+
+  table.insert(BULLETS, bullet)
+end
+
 function love.keypressed(key)
   if key == "space" then
     SPAWNZOMBIE()
+  end
+end
+
+function love.mousepressed(x, y, button)
+  if button == 1 then
+    SPAWNBULLET()
   end
 end
