@@ -1,7 +1,9 @@
 function love.load()
   math.randomseed(os.time())
 
-  GAMESTATE = 1 -- 1 for menu, 2 for game, 3 for score
+  GAMESTATE = 1 -- 1 for menu, 2 for game
+
+  SCORE = 0
 
   SPRITES = {}
   SPRITES.background = love.graphics.newImage('sprites/background.png')
@@ -68,6 +70,7 @@ function love.update(dt)
       if DISTANCEBETWEEN(z.x, z.y, b.x, b.y) < 20 then
         z.dead = true
         b.dead = true
+        SCORE = SCORE + 1
       end
     end
   end
@@ -105,6 +108,8 @@ function love.draw()
     love.graphics.setFont(GAMEFONT)
     love.graphics.printf("Click to begin", 0, 50, love.graphics.getWidth(), "center")
   end
+
+  love.graphics.printf("Score: "..SCORE, 0, love.graphics.getHeight() * .8, love.graphics.getWidth(), "center")
 
   love.graphics.draw(
     SPRITES.player,
@@ -212,5 +217,6 @@ function love.mousepressed(x, y, button)
     SPAWNBULLET()
   elseif button == 1 and GAMESTATE == 1 then
     GAMESTATE = 2
+    SCORE = 0
   end
 end
